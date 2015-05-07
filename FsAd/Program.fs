@@ -1,5 +1,4 @@
-﻿// Learn more about F# at http://fsharp.net
-// See the 'F# Tutorial' project for more help.
+﻿/// F# Source code for http://www.codemag.com/Article/1312041
 
 open System
 open FsAd.ADModule
@@ -9,28 +8,40 @@ let main argv =
 
     let domainPath = getCurrentDomainPath ()
 
-    domainPath |> printfn "%s"
+    domainPath |> printfn "Domain Path: %s"
+    printfn ""
 
-//    let limit1 = 10 in
-//    printfn "Retrieving first %d user names" limit1
-//    getAllUsers limit1 domainPath |> List.iter (printfn "%A")
-//    printfn ""
+    let limit1 = 10 in
+    printfn "Retrieving first %d user names" limit1
+    findAllUserFullNames limit1 domainPath |> List.iter (printfn "%A")
+    printfn ""
 
 //    let limit2 = 20 in
 //    printfn "Retrieving first %d users" limit2
-//    getAdditionalUserInformation limit2 domainPath |> List.iter (printfn "%A")
+//    findAllUsers limit2 domainPath |> List.iter (printfn "%A")
 //    printfn ""
 
 //    let userName1 = "mcdonald" in
 //    printfn "Search for %s" userName1
-//    searchForUsers domainPath userName1 |> List.iter (printfn "%A")
+//    findUsersByName 100 domainPath userName1 |> List.iter (printfn "%A")
 //    printfn ""
 
-
-//    getAUser domainPath "McDonald, Patrick" |> printfn "%A"
-
-    
+    let userName2 = "mcdonald, patrick" in
+    printfn "Retrieving user %s" userName2
+    findUserByName domainPath userName2 |> printfn "%A"
     printfn ""
+
+//    findAllGroups 10 domainPath |> printfn "%A"
+//    printfn ""
+
+//    findGroupsByName 100 domainPath "contacthistory" |> printfn "%A"
+//    printfn ""
+
+//    ["GIT_G_045_Mig_Prod_Factsheets"; "GIT_G_045_Product_Launches_Information"; "GIT_G_045_CUSTOMER_ISSUES"]
+//    |> List.collect (findGroupsByName 100 domainPath)
+//    |> printfn "%A"
+
+
     printf "Press any key to continue . . . "
     Console.ReadKey true |> ignore
 
