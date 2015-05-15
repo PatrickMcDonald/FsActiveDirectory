@@ -102,50 +102,17 @@ module ADModule =
         Members = sr.Properties.["member"] |> Seq.cast<string> |> Seq.sort |> List.ofSeq
       }
 
-    let findAllUserFullNames limit domainPath =
-        use de = new DirectoryEntry(domainPath)
-        use ds = new DirectorySearcher(de)
-        ds.Filter <- "(&(objectCategory=User)(objectClass=person))"
-        if limit > 0 then
-            ds.SizeLimit <- limit
-
-        [ for sr in ds.FindAll () -> sr.FullName ]
-
-    let userQuery limit domainPath filter mapping =
+    let userQuery domainPath limit filter mapping =
         use de = new DirectoryEntry(domainPath)
         use ds = buildUserSearcher limit de
         ds.Filter <- filter
         ds.findAndMap mapping
 
-    let findAllUsers limit domainPath =
-        userQuery limit domainPath "(&(objectCategory=User)(objectClass=person))" adUser
-
-    let findUsersByName limit domainPath name =
-        userQuery limit domainPath (sprintf "(&(objectCategory=User)(objectClass=person)(name=%s*))" name) adUser
-
-    let findUserByName domainPath name =
-        use de = new DirectoryEntry(domainPath)
-        use ds = buildUserSearcher 1 de
-        ds.Filter <- sprintf "(&(objectCategory=User)(objectClass=person)(name=%s))" name
-        ds.findAndMapOne adUser
-
-    let groupQuery limit domainPath filter mapping =
+    let groupQuery domainPath limit filter mapping =
         use de = new DirectoryEntry(domainPath)
         use ds = buildGroupSearcher limit de
         ds.Filter <- filter
         ds.findAndMap mapping
-
-    let findAllGroups limit domainPath =
-        groupQuery limit domainPath "(&(objectCategory=Group))" adGroup
-
-    let findGroupsByName limit domainPath name =
-        groupQuery limit domainPath (sprintf "(&(objectCategory=Group)(name=*%s*))" name) adGroup
-
-    let findGroup domainPath name =
-        use de = new DirectoryEntry(domainPath)
-        use ds = buildGroupSearcher 1 de
-        ds.Filter <- sprintf "(&(objectCategory=Group)(name=%s))" name
-        ds.findAndMapOne adGroup
 
     let authenticateUser domainName userName password =
         try

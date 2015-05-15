@@ -49,9 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ADModule.fs" />
+    <Compile Include="ADDomain.fs" />
     <Compile Include="ADDisplay.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
+    <None Include="FsAd.fsx" />
     <None Include="Script.fsx" />
   </ItemGroup>
   <PropertyGroup>

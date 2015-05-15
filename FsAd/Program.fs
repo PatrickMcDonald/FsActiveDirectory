@@ -1,44 +1,46 @@
 ﻿/// F# Source code for http://www.codemag.com/Article/1312041
 
 open System
+open FsAd
 open FsAd.ADModule
+open FsAd.ADDisplay
 
 [<EntryPoint>]
 let main argv =
 
-    let domainPath = getCurrentDomainPath ()
+    let currentDomain = ADDomain ()
 
-    domainPath |> printfn "Domain Path: %s"
+    currentDomain.path |> printfn "Domain Path: %s"
     printfn ""
 
     let limit1 = 10 in
     printfn "Retrieving first %d user names" limit1
-    findAllUserFullNames limit1 domainPath |> List.iter (printfn "%A")
+    currentDomain.findAllUserFullNames limit1 |> List.iter (printfn "%A")
     printfn ""
 
 //    let limit2 = 20 in
 //    printfn "Retrieving first %d users" limit2
-//    findAllUsers limit2 domainPath |> List.iter (printfn "%A")
+//    currentDomain.findAllUsers limit2 |> List.iter (printfn "%A")
 //    printfn ""
 
 //    let userName1 = "mcdonald" in
 //    printfn "Search for %s" userName1
-//    findUsersByName 100 domainPath userName1 |> List.iter (printfn "%A")
+//    currentDomain.findUsersByName 100 userName1 |> List.iter (printfn "%A")
 //    printfn ""
 
     let userName2 = "mcdonald, patrick" in
     printfn "Retrieving user %s" userName2
-    findUserByName domainPath userName2 |> printfn "%A"
+    currentDomain.findUserByName userName2 |> printfn "%A"
     printfn ""
 
-//    findAllGroups 10 domainPath |> printfn "%A"
+//    currentDomain.findAllGroups 10 |> printfn "%A"
 //    printfn ""
 
-//    findGroupsByName 100 domainPath "contacthistory" |> printfn "%A"
-//    printfn ""
+    currentDomain.findGroupsByName 100 "contacthistory" |> List.iter printGroup
+    printfn ""
 
 //    ["GIT_G_045_Mig_Prod_Factsheets"; "GIT_G_045_Product_Launches_Information"; "GIT_G_045_CUSTOMER_ISSUES"]
-//    |> List.collect (findGroupsByName 100 domainPath)
+//    |> List.collect (currentDomain.findGroupsByName 100)
 //    |> printfn "%A"
 
 

@@ -1,28 +1,25 @@
-﻿#r "System.DirectoryServices.dll"
-
-#load "ADModule.fs"
-#load "ADDisplay.fs"
+﻿#load "FsAd.fsx"
 
 open System
-open FsAd.ADModule
+open FsAd
 open FsAd.ADDisplay
 
-let domainPath = getCurrentDomainPath ()
+let currentDomain = FsAd.ADDomain()
 
-findAllUserFullNames 10 domainPath
+currentDomain.findAllUserFullNames 10
 
-findAllUsers 0 domainPath
+currentDomain.findAllUsers 0
 
-findUsersByName 100 domainPath "mcdonald"
+currentDomain.findUsersByName 100 "mcdonald"
 
-findUserByName domainPath "mcdonald, patrick"
+currentDomain.findUserByName "mcdonald, patrick"
 
-findAllGroups 10 domainPath
+currentDomain.findAllGroups 10
 
-findGroupsByName 100 domainPath "GIT_GS_SEC_Retail_ContactHistory"
+currentDomain.findGroupsByName 100 "GIT_GS_SEC_Retail_ContactHistory"
 |> List.iter printGroup
 
-findGroup domainPath "GIT_GS_SEC_Retail_ContactHistory"
+currentDomain.findGroup "GIT_GS_SEC_Retail_ContactHistory"
 |> Option.iter printGroup
 
-authenticateUser "DC=domain,DC=internal" "redacted" "password"
+FsAd.ADModule.authenticateUser "DC=domain,DC=internal" "redacted" "password"
