@@ -1,9 +1,11 @@
 ﻿#r "System.DirectoryServices.dll"
 
 #load "ADModule.fs"
+#load "ADDisplay.fs"
 
 open System
 open FsAd.ADModule
+open FsAd.ADDisplay
 
 let domainPath = getCurrentDomainPath ()
 
@@ -17,8 +19,10 @@ findUserByName domainPath "mcdonald, patrick"
 
 findAllGroups 10 domainPath
 
-findGroupsByName 100 domainPath "GIT_G_045_CUSTOMER_ISSUES"
+findGroupsByName 100 domainPath "GIT_GS_SEC_Retail_ContactHistory"
+|> List.iter printGroup
 
-findGroup domainPath "GIT_G_045_CUSTOMER_ISSUES"
+findGroup domainPath "GIT_GS_SEC_Retail_ContactHistory"
+|> Option.iter printGroup
 
 authenticateUser "DC=domain,DC=internal" "redacted" "password"
