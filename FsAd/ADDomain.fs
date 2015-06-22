@@ -19,25 +19,25 @@ type ADDomain (path) =
         [ for sr in ds.FindAll () -> sr.FullName ]
 
     member __.findAllUsers limit =
-        userQuery path limit "(&(objectCategory=User)(objectClass=person))" adUser
+        userQuery path limit "(&(objectCategory=User)(objectClass=person))" ADUser.ofSearchResult
 
     member __.findUsersByName limit name =
-        userQuery path limit (sprintf "(&(objectCategory=User)(objectClass=person)(name=%s*))" name) adUser
+        userQuery path limit (sprintf "(&(objectCategory=User)(objectClass=person)(name=%s*))" name) ADUser.ofSearchResult
 
     member __.findUserByName name =
         use de = new DirectoryEntry(path)
         use ds = buildUserSearcher 1 de
         ds.Filter <- sprintf "(&(objectCategory=User)(objectClass=person)(name=%s))" name
-        ds.findAndMapOne adUser
+        ds.findAndMapOne ADUser.ofSearchResult
 
     member __.findAllGroups limit =
-        groupQuery path limit "(&(objectCategory=Group))" adGroup
+        groupQuery path limit "(&(objectCategory=Group))" ADGroup.ofSearchResult
 
     member __.findGroupsByName limit name =
-        groupQuery path limit (sprintf "(&(objectCategory=Group)(name=*%s*))" name) adGroup
+        groupQuery path limit (sprintf "(&(objectCategory=Group)(name=*%s*))" name) ADGroup.ofSearchResult
 
     member __.findGroup name =
         use de = new DirectoryEntry(path)
         use ds = buildGroupSearcher 1 de
         ds.Filter <- sprintf "(&(objectCategory=Group)(name=%s))" name
-        ds.findAndMapOne adGroup
+        ds.findAndMapOne ADGroup.ofSearchResult

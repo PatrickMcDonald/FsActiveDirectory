@@ -3,12 +3,6 @@
 open System
 open System.DirectoryServices
 
-module List =
-    let ofEnumerable<'T> collection =
-        collection
-        |> Seq.cast<'T>
-        |> List.ofSeq
-
 module DirectoryServiceExtensions =
 
     type DirectorySearcher with
@@ -17,8 +11,9 @@ module DirectoryServiceExtensions =
 
         member this.findAndMap mapping =
             this.FindAll ()
-            |> List.ofEnumerable<SearchResult>
-            |> List.map mapping
+            |> Seq.cast<SearchResult>
+            |> Seq.map mapping
+            |> List.ofSeq
 
         member this.findAndMapOne mapping =
             match this.FindOne() with
@@ -45,6 +40,8 @@ module DirectoryServiceExtensions =
             if this.Properties.[propertyName].Count = 0 then raise <| InvalidOperationException (propertyNotFound propertyName)
             this.Properties.[propertyName].[0].ToString ()
 
+open DirectoryServiceExtensions
+
 type ADUser = {
     FullName: string
     EmailAddress: string option
@@ -54,14 +51,29 @@ type ADUser = {
     DistinguishedName: string option
     LogonNamePreWindows2000: string option
     }
+    with
+    static member ofSearchResult (sr : SearchResult) =
+      { FullName = sr.FullName
+        EmailAddress = sr.["mail"]
+        FirstName = sr.["givenname"]
+        LastName = sr.["sn"]
+        LoginName = sr.["userPrincipalName"]
+        DistinguishedName = sr.["distinguishedName"]
+        LogonNamePreWindows2000 = sr.["sAMAccountName"]
+      }
 
 type ADGroup = {
     FullName: string
     MemberOf: string list
     Members: string list
     }
+    with
+    static member ofSearchResult (sr : SearchResult) =
+      { FullName = sr.FullName
+        MemberOf = sr.Properties.["memberof"] |> Seq.cast<string> |> Seq.sort |> List.ofSeq
+        Members = sr.Properties.["member"] |> Seq.cast<string> |> Seq.sort |> List.ofSeq
+      }
 
-open DirectoryServiceExtensions
 
 module ADModule =
     let getCurrentDomainPath _ =
@@ -85,22 +97,6 @@ module ADModule =
         if limit > 0 then
             ds.SizeLimit <- limit
         ds
-
-    let adUser (sr : SearchResult) =
-      { FullName = sr.FullName
-        EmailAddress = sr.["mail"]
-        FirstName = sr.["givenname"]
-        LastName = sr.["sn"]
-        LoginName = sr.["userPrincipalName"]
-        DistinguishedName = sr.["distinguishedName"]
-        LogonNamePreWindows2000 = sr.["sAMAccountName"]
-      }
-
-    let adGroup (sr: SearchResult) =
-      { FullName = sr.FullName
-        MemberOf = sr.Properties.["memberof"] |> Seq.cast<string> |> Seq.sort |> List.ofSeq
-        Members = sr.Properties.["member"] |> Seq.cast<string> |> Seq.sort |> List.ofSeq
-      }
 
     let userQuery domainPath limit filter mapping =
         use de = new DirectoryEntry(domainPath)
